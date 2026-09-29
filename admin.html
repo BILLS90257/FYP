@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHMaaS Admin</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script defer src="app-settings.js?v=20260612"></script>
+    <style>
+        :root {
+            --bg: #07111f;
+            --panel: rgba(10, 18, 33, 0.88);
+            --panel-strong: rgba(12, 22, 42, 0.96);
+            --panel-soft: rgba(18, 31, 57, 0.84);
+            --text: #edf4ff;
+            --muted: #9eb0cc;
+            --line: rgba(148, 163, 184, 0.18);
+            --primary: #60a5fa;
+            --primary-strong: #2563eb;
+            --accent: #38bdf8;
+            --good: #22c55e;
+            --warn: #f59e0b;
+            --bad: #ef4444;
+            --shadow: 0 24px 60px rgba(2, 8, 23, 0.45);
+            --shadow-soft: 0 14px 32px rgba(2, 8, 23, 0.26);
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text);
+            overflow-x: auto;
+            overflow-y: auto;
+            background:
+                radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 28rem),
+                radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.2), transparent 24rem),
+                linear-gradient(180deg, #020712 0%, #081121 100%);
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .shell {
+            width: min(100%, 1600px);
+            margin: 0 auto;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+        }
+
+        .sidebar {
+            padding: 24px;
+            background: linear-gradient(180deg, rgba(11, 18, 33, 0.95), rgba(6, 12, 24, 0.98));
+            border-right: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand-mark {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary-strong), var(--accent));
+            box-shadow: var(--shadow-soft);
+            display: grid;
+            place-items: center;
+        }
+
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .eyebrow {
+            color: #7dd3fc;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .brand h1, .hero h2, .panel h3, .range-card h3, .room-card h4 {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            margin: 0;
+        }
+
+        .brand h1 {
+            font-size: 1.1rem;
+            line-height: 1.2;
+        }
+
+        .brand p, .muted {
+            color: var(--muted);
+        }
+
+        .nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .nav a, .nav button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+            border: 1px solid transparent;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .nav a:hover, .nav button:hover, .nav a.active {
+            transform: translateY(-1px);
+            border-color: rgba(125, 211, 252, 0.26);
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        .side-card {
+            padding: 16px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(29, 45, 74, 0.7), rgba(12, 22, 42, 0.84));
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .mini-stats {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .mini-stat {
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+        }
+
+        .mini-stat strong {
+            display: block;
+            font-size: 1.25rem;
+            margin-top: 6px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            display: grid;
+            gap: 12px;
+        }
+
+        .primary-btn, .secondary-btn, .danger-btn {
+            min-height: 48px;
+            padding: 0 16px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 800;
+            transition: transform 0.18s ease, opacity 0.18s ease;
+        }
+
+        .primary-btn {
+            color: white;
+            background: linear-gradient(135deg, var(--primary-strong), var(--accent));
+            box-shadow: 0 14px 24px rgba(37, 99, 235, 0.3);
+        }
+
+        .secondary-btn {
+            color: #dbeafe;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--line);
+        }
+
+        .danger-btn {
+            color: #fee2e2;
+            background: rgba(239, 68, 68, 0.16);
+            border: 1px solid rgba(239, 68, 68, 0.22);
+        }
+
+        .primary-btn:hover, .secondary-btn:hover, .danger-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .main {
+            padding: 28px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .hero {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 22px 24px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(10, 20, 39, 0.94), rgba(17, 31, 58, 0.88));
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .hero h2 {
+            font-size: clamp(1.4rem, 2vw, 2.2rem);
+            margin: 2px 0 10px;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 64ch;
+        }
+
+        .hero-tools {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .search {
+            min-width: 280px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--line);
+        }
+
+        .search input, .control-field select {
+            width: 100%;
+            color: var(--text);
+            background: transparent;
+            border: 0;
+            outline: none;
+            min-height: 48px;
+        }
+
+        .search input::placeholder {
+            color: #86a0bf;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar button {
+            padding: 12px 15px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--line);
+            font-weight: 700;
+        }
+
+        .toolbar button.active {
+            background: rgba(96, 165, 250, 0.18);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .stat-card {
+            padding: 18px;
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(14, 24, 44, 0.96), rgba(9, 17, 32, 0.96));
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-card strong {
+            display: block;
+            margin-top: 10px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.9rem;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.9fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .stack {
+            display: grid;
+            gap: 20px;
+        }
+
+        .panel, .range-card {
+            border-radius: 26px;
+            background: linear-gradient(180deg, rgba(11, 19, 36, 0.94), rgba(8, 14, 28, 0.98));
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .panel {
+            padding: 20px;
+            position: sticky;
+            top: 24px;
+        }
+
+        .panel-head, .range-head, .room-head, .details-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-head h3 {
+            font-size: 1.15rem;
+        }
+
+        .selected-card {
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            display: grid;
+            gap: 12px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .pill.good { background: rgba(34, 197, 94, 0.14); color: #86efac; }
+        .pill.warn { background: rgba(245, 158, 11, 0.14); color: #fcd34d; }
+        .pill.bad { background: rgba(239, 68, 68, 0.14); color: #fca5a5; }
+        .pill.info { background: rgba(96, 165, 250, 0.16); color: #bfdbfe; }
+
+        .details-grid {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .detail {
+            padding: 12px 14px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+        }
+
+        .detail span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+        }
+
+        .detail strong {
+            display: block;
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+
+        .control-group {
+            display: grid;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .control-field {
+            padding: 0 14px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+        }
+
+        .control-field label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 10px;
+        }
+
+        .control-field select {
+            appearance: none;
+        }
+
+        .control-actions {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 14px;
+        }
+
+        .range-card {
+            padding: 20px;
+        }
+
+        .range-card + .range-card {
+            margin-top: 20px;
+        }
+
+        .rooms-grid {
+            margin-top: 16px;
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .room-card {
+            padding: 16px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+        }
+
+        .room-card.focus {
+            border-color: rgba(96, 165, 250, 0.42);
+            box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2);
+        }
+
+        .room-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .bed-grid {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .bed-slot {
+            min-height: 74px;
+            padding: 10px;
+            border-radius: 18px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            color: var(--text);
+            display: grid;
+            align-content: start;
+            gap: 4px;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .bed-slot:hover {
+            transform: translateY(-1px);
+        }
+
+        .bed-slot.empty {
+            opacity: 0.55;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .bed-slot.occupied {
+            background: rgba(96, 165, 250, 0.12);
+            border-color: rgba(96, 165, 250, 0.22);
+        }
+
+        .bed-slot.active {
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+        }
+
+        .bed-slot strong {
+            font-size: 0.88rem;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .bed-slot small {
+            color: var(--muted);
+            font-size: 0.76rem;
+        }
+
+        .room-list-note {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+            z-index: 4000;
+            padding: 14px 18px;
+            border-radius: 16px;
+            background: rgba(11, 19, 36, 0.96);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+            color: var(--text);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            max-width: min(92vw, 560px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { border-color: rgba(34, 197, 94, 0.26); }
+        .toast.error { border-color: rgba(239, 68, 68, 0.3); }
+
+        .loading {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .spinner {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 5px solid rgba(148, 163, 184, 0.18);
+            border-top-color: var(--accent);
+            margin: 0 auto 18px;
+            animation: spin 0.85s linear infinite;
+        }
+
+        .loading-card {
+            width: min(100%, 360px);
+            padding: 28px 24px;
+            border-radius: 26px;
+            background: rgba(11, 19, 36, 0.9);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .loading-line {
+            height: 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .loading-line.sm { height: 12px; }
+        .loading-line.md { height: 18px; }
+
+        .loading-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-shimmer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+            animation: shimmer 1.2s infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        @media (max-width: 1180px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .loading-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .loading-stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .panel {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .main {
+                padding: 16px;
+            }
+
+            .hero, .stats-grid {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .loading-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .loading-rooms,
+            .loading-bed-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-tools, .control-actions {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .details-grid, .bed-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search {
+                min-width: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen" class="loading">
+        <div class="loading-card">
+            <div class="spinner"></div>
+            <div class="eyebrow">Room Control Center</div>
+            <h2 style="font-family:'Plus Jakarta Sans',sans-serif;margin:0 0 8px;">Loading admin dashboard</h2>
+            <p style="color: var(--muted); margin: 0;">Checking access and fetching room occupancy data.</p>
+        </div>
+    </div>
+    </div>
+
+    <div id="appShell" class="shell" hidden>
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">
+                    <img src="assets/tvet-mara-logo-transparent.png" alt="TVET MARA">
+                </div>
+                <div>
+                    <div class="eyebrow">Admin Portal</div>
+                    <h1>Hostel Room Control</h1>
+                    <p id="staffLabel">Managing student beds and room transfers.</p>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a class="active" href="#overview"><i class="fa-solid fa-chart-column"></i> Overview</a>
+                <a href="#rooms"><i class="fa-solid fa-door-open"></i> Rooms</a>
+                <a href="#selected"><i class="fa-solid fa-user-pen"></i> Selected Student</a>
+            </nav>
+
+            <div class="side-card">
+                <div class="muted" style="font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Quick Stats</div>
+                <div class="mini-stats" style="margin-top:12px;">
+                    <div class="mini-stat">
+                        <span class="muted">Booked</span>
+                        <strong id="miniBooked">0</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="muted">Vacant</span>
+                        <strong id="miniVacant">0</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="muted">Rooms</span>
+                        <strong id="miniRooms">0</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="muted">Ranges</span>
+                        <strong id="miniRanges">4</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a class="secondary-btn" href="student.html"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Student Portal</a>
+                <button id="refreshBtn" class="secondary-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh View</button>
+                <button id="logoutBtn" class="danger-btn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <section class="hero" id="overview">
+                <div>
+                    <div class="eyebrow">TVET MARA Besut</div>
+                    <h2>Manage every room, bed, and student transfer from one place.</h2>
+                    <p>
+                        Click any occupied bed to inspect the student, move them to another available bed, or remove the assignment
+                        so the bed becomes open again.
+                    </p>
+                </div>
+                <div class="hero-tools">
+                    <label class="search">
+                        <i class="fa-solid fa-magnifying-glass" style="color:#7dd3fc;"></i>
+                        <input id="searchInput" type="search" placeholder="Search student, room, or matrix number">
+                    </label>
+                    <div class="toolbar" id="rangeToolbar">
+                        <button type="button" class="active" data-range="all">All</button>
+                        <button type="button" data-range="A101-A111">Block A1</button>
+                        <button type="button" data-range="A201-A211">Block A2</button>
+                        <button type="button" data-range="B101-B111">Block B</button>
+                        <button type="button" data-range="C101-C111">Block C</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <article class="stat-card">
+                    <span>Assigned Students</span>
+                    <strong id="statAssigned">0</strong>
+                </article>
+                <article class="stat-card">
+                    <span>Occupied Beds</span>
+                    <strong id="statOccupied">0</strong>
+                </article>
+                <article class="stat-card">
+                    <span>Available Beds</span>
+                    <strong id="statAvailable">0</strong>
+                </article>
+                <article class="stat-card">
+                    <span>Rooms in View</span>
+                    <strong id="statRooms">0</strong>
+                </article>
+            </section>
+
+            <section class="content">
+                <div class="stack">
+                    <article class="range-card" id="rooms">
+                        <div class="range-head">
+                            <div>
+                                <div class="eyebrow">Room Matrix</div>
+                                <h3>Student names shown on every occupied bed.</h3>
+                            </div>
+                            <span class="pill info" id="dataStatus"><i class="fa-solid fa-circle-notch"></i> Live</span>
+                        </div>
+                        <p class="room-list-note">Select a student bed to open transfer controls in the panel on the right.</p>
+                        <div id="roomBoard"></div>
+                    </article>
+                </div>
+
+                <aside class="panel" id="selected">
+                    <div class="panel-head">
+                        <div>
+                            <div class="eyebrow">Selected Student</div>
+                            <h3 id="selectedTitle">No student selected</h3>
+                        </div>
+                        <span class="pill warn" id="selectedBadge"><i class="fa-solid fa-circle-info"></i> Idle</span>
+                    </div>
+
+                    <div id="selectedEmpty" class="selected-card">
+                        <p style="margin:0;">Click an occupied bed to view the student and move or remove their assignment.</p>
+                    </div>
+
+                    <div id="selectedDetails" class="selected-card" hidden>
+                        <div class="details-grid">
+                            <div class="detail">
+                                <span>Student Name</span>
+                                <strong id="detailName">-</strong>
+                            </div>
+                            <div class="detail">
+                                <span>Matrix Number</span>
+                                <strong id="detailId">-</strong>
+                            </div>
+                            <div class="detail">
+                                <span>Current Room</span>
+                                <strong id="detailRoom">-</strong>
+                            </div>
+                            <div class="detail">
+                                <span>Current Bed</span>
+                                <strong id="detailBed">-</strong>
+                            </div>
+                            <div class="detail">
+                                <span>Range</span>
+                                <strong id="detailRange">-</strong>
+                            </div>
+                            <div class="detail">
+                                <span>Status</span>
+                                <strong id="detailStatus">-</strong>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-field">
+                                <label for="targetRange">Move to range</label>
+                                <select id="targetRange"></select>
+                            </div>
+                            <div class="control-field">
+                                <label for="targetRoom">Move to room</label>
+                                <select id="targetRoom"></select>
+                            </div>
+                            <div class="control-field">
+                                <label for="targetBed">Move to bed</label>
+                                <select id="targetBed"></select>
+                            </div>
+                        </div>
+
+                        <div class="control-actions">
+                            <button id="moveBtn" class="primary-btn" type="button"><i class="fa-solid fa-right-left"></i> Move Student</button>
+                            <button id="removeBtn" class="danger-btn" type="button"><i class="fa-solid fa-trash"></i> Remove Assignment</button>
+                            <button id="deleteAccountBtn" class="danger-btn" type="button"><i class="fa-solid fa-user-slash"></i> Delete Account</button>
+                        </div>
+                        <p class="room-list-note" style="margin-bottom:0;">Delete Account removes the Firestore user, student, and booking records. Firebase Authentication user deletion must be done with Admin SDK or a backend function.</p>
+                    </div>
+
+                    <div class="selected-card">
+                        <div class="panel-head" style="margin:0 0 12px;">
+                            <div>
+                                <div class="eyebrow">Access Control</div>
+                                <h3 style="margin-top:4px;">Grant staff or admin access</h3>
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-top:0;">
+                            <div class="control-field">
+                                <label for="accessRole">Role</label>
+                                <select id="accessRole">
+                                    <option value="staff">Staff</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="control-field">
+                                <label for="accessMatrixNo">Matrix / Code</label>
+                                <input id="accessMatrixNo" type="text" placeholder="W12345 or ADMIN002" style="width:100%;min-height:48px;background:transparent;border:0;outline:none;color:inherit;">
+                            </div>
+                            <div class="control-field">
+                                <label for="accessEmail">Email</label>
+                                <input id="accessEmail" type="email" placeholder="staff@email.com" style="width:100%;min-height:48px;background:transparent;border:0;outline:none;color:inherit;">
+                            </div>
+                            <div class="control-field">
+                                <label style="display:flex;align-items:center;gap:10px;margin:0;min-height:48px;">
+                                    <input id="accessActive" type="checkbox" checked>
+                                    <span>Active access</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="control-actions" style="margin-top:14px;">
+                            <button id="saveAccessBtn" class="primary-btn" type="button"><i class="fa-solid fa-user-shield"></i> Save Access</button>
+                            <button id="revokeAccessBtn" class="danger-btn" type="button"><i class="fa-solid fa-user-xmark"></i> Revoke</button>
+                            <button id="resetPasswordBtn" class="secondary-btn" type="button"><i class="fa-solid fa-unlock-keyhole"></i> Send Reset Email</button>
+                        </div>
+                        <p class="room-list-note" style="margin-bottom:0;">This manages approval lists for staff/admin registration and can send a password reset email. Direct password changes need a backend Admin SDK function.</p>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut,
+            sendPasswordResetEmail
+        } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            getDoc,
+            onSnapshot,
+            orderBy,
+            query,
+            runTransaction,
+            serverTimestamp,
+            setDoc,
+            deleteDoc
+        } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: 'AIzaSyCB52CH0zuLg5SEfBG4eh_zpkoEfIjqfkU',
+            authDomain: 'shmaas-3a0c6.firebaseapp.com',
+            projectId: 'shmaas-3a0c6',
+            storageBucket: 'shmaas-3a0c6.firebasestorage.app',
+            messagingSenderId: '774113957832',
+            appId: '1:774113957832:web:130f1dd20182665c49d2fd'
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const BEDS_PER_ROOM = 6;
+        const ROOM_RANGES = [
+            { id: 'A101-A111', title: 'Block A1', block: 'A', start: 101, end: 111, note: 'Rooms A101 - A111' },
+            { id: 'A201-A211', title: 'Block A2', block: 'A', start: 201, end: 211, note: 'Rooms A201 - A211' },
+            { id: 'B101-B111', title: 'Block B', block: 'B', start: 101, end: 111, note: 'Rooms B101 - B111' },
+            { id: 'C101-C111', title: 'Block C', block: 'C', start: 101, end: 111, note: 'Rooms C101 - C111' }
+        ];
+
+        const beds = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+        const loadingScreen = document.getElementById('loadingScreen');
+        const appShell = document.getElementById('appShell');
+        const roomBoard = document.getElementById('roomBoard');
+        const searchInput = document.getElementById('searchInput');
+        const rangeToolbar = document.getElementById('rangeToolbar');
+        const selectedEmpty = document.getElementById('selectedEmpty');
+        const selectedDetails = document.getElementById('selectedDetails');
+        const selectedTitle = document.getElementById('selectedTitle');
+        const selectedBadge = document.getElementById('selectedBadge');
+        const targetRange = document.getElementById('targetRange');
+        const targetRoom = document.getElementById('targetRoom');
+        const targetBed = document.getElementById('targetBed');
+        const moveBtn = document.getElementById('moveBtn');
+        const removeBtn = document.getElementById('removeBtn');
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        const accessRole = document.getElementById('accessRole');
+        const accessMatrixNo = document.getElementById('accessMatrixNo');
+        const accessEmail = document.getElementById('accessEmail');
+        const accessActive = document.getElementById('accessActive');
+        const saveAccessBtn = document.getElementById('saveAccessBtn');
+        const revokeAccessBtn = document.getElementById('revokeAccessBtn');
+        const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+        const dataStatus = document.getElementById('dataStatus');
+        const staffLabel = document.getElementById('staffLabel');
+
+        let currentUser = null;
+        let staffProfile = null;
+        let allBookings = [];
+        let bookingsByRoom = new Map();
+        let bookingsByRoomAndBed = new Map();
+        let bookingsById = new Map();
+        let bookingSearchIndex = new Map();
+        let roomCounts = new Map();
+        let rangeCounts = new Map();
+        let activeRangeFilter = 'all';
+        let selectedBookingId = '';
+        let hasLoadedBookings = false;
+        let renderQueued = false;
+        let availabilitySyncTimer = null;
+
+        const ROOM_TO_RANGE = new Map();
+        const RANGE_ROOM_CACHE = new Map();
+        for (const range of ROOM_RANGES) {
+            const rooms = rangeRooms(range);
+            RANGE_ROOM_CACHE.set(range.id, rooms);
+            for (const room of rooms) {
+                ROOM_TO_RANGE.set(room, range.id);
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function toast(message, type = 'success') {
+            const el = document.getElementById('toast');
+            el.textContent = message;
+            el.className = `toast show ${type}`;
+            window.clearTimeout(toast._timer);
+            toast._timer = window.setTimeout(() => el.className = 'toast', 2600);
+        }
+
+        function normalizeBed(value) {
+            const raw = String(value || '').trim().toUpperCase();
+            if (!raw) return '';
+            if (beds.includes(raw)) return raw;
+            const numeric = Number(raw);
+            if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 6) {
+                return beds[numeric - 1];
+            }
+            return raw;
+        }
+
+        function normalizeRoom(value) {
+            return String(value || '').trim().toUpperCase();
+        }
+
+        function bookingDocId(room, bedNumber) {
+            return `bed_${normalizeRoom(room)}_${normalizeBed(bedNumber)}`;
+        }
+
+        function rangeRooms(range) {
+            return Array.from({ length: range.end - range.start + 1 }, (_, index) => `${range.block}${range.start + index}`);
+        }
+
+        function findRangeForRoom(room) {
+            const cleaned = normalizeRoom(room);
+            const rangeId = ROOM_TO_RANGE.get(cleaned);
+            return rangeId ? ROOM_RANGES.find(range => range.id === rangeId) || null : null;
+        }
+
+        function roomBookingsFor(room, ignoreBookingId = '') {
+            const cleaned = normalizeRoom(room);
+            const bookings = bookingsByRoom.get(cleaned) || [];
+            if (!ignoreBookingId) return bookings;
+            return bookings.filter(booking => booking.id !== ignoreBookingId);
+        }
+
+        function freeBedsForRoom(room, ignoreBookingId = '') {
+            const roomBookings = roomBookingsFor(room, ignoreBookingId);
+            return beds.filter(bed => {
+                return !roomBookings.some(booking => normalizeBed(booking.bedNumber) === bed);
+            });
+        }
+
+        function occupiedBedsForRoom(room) {
+            return roomCounts.get(normalizeRoom(room)) || 0;
+        }
+
+        function roomAvailableBeds(room, ignoreBookingId = '') {
+            return Math.max(BEDS_PER_ROOM - roomBookingsFor(room, ignoreBookingId).length, 0);
+        }
+
+        function selectedBooking() {
+            return bookingsById.get(selectedBookingId) || null;
+        }
+
+        function bookingSearchText(booking) {
+            return [
+                booking.studentName,
+                booking.studentId,
+                booking.room,
+                booking.bedNumber,
+                booking.roomRange,
+                booking.createdBy
+            ].join(' ').toLowerCase();
+        }
+
+        function bookingMatchesSearch(booking, searchTerm) {
+            if (!searchTerm) return true;
+            return (bookingSearchIndex.get(booking.id) || '').includes(searchTerm);
+        }
+
+        function getAccessCollection() {
+            return accessRole.value === 'admin' ? 'allowedAdmins' : 'allowedStaff';
+        }
+
+        function normalizeAccessMatrix() {
+            return String(accessMatrixNo.value || '').trim().toUpperCase();
+        }
+
+        function setAccessFormFromBooking(booking) {
+            if (!booking) return;
+            if (booking.matrixNumber || booking.matrixNo) {
+                accessMatrixNo.value = booking.matrixNumber || booking.matrixNo || '';
+            }
+            if (booking.email || booking.createdBy) {
+                accessEmail.value = booking.email || booking.createdBy || '';
+            }
+        }
+
+        function rebuildBookingIndexes(bookings) {
+            bookingsByRoom = new Map();
+            bookingsByRoomAndBed = new Map();
+            bookingsById = new Map();
+            bookingSearchIndex = new Map();
+            roomCounts = new Map();
+            rangeCounts = new Map();
+
+            for (const range of ROOM_RANGES) {
+                rangeCounts.set(range.id, 0);
+                for (const room of RANGE_ROOM_CACHE.get(range.id) || []) {
+                    bookingsByRoom.set(room, []);
+                    bookingsByRoomAndBed.set(room, new Map());
+                    roomCounts.set(room, 0);
+                }
+            }
+
+            for (const booking of bookings) {
+                const room = normalizeRoom(booking.room);
+                bookingsById.set(booking.id, booking);
+                bookingSearchIndex.set(booking.id, bookingSearchText(booking));
+
+                if (bookingsByRoom.has(room)) {
+                    bookingsByRoom.get(room).push(booking);
+                    bookingsByRoomAndBed.get(room).set(normalizeBed(booking.bedNumber), booking);
+                    roomCounts.set(room, (roomCounts.get(room) || 0) + 1);
+                }
+
+                const rangeId = ROOM_TO_RANGE.get(room);
+                if (rangeId) {
+                    rangeCounts.set(rangeId, (rangeCounts.get(rangeId) || 0) + 1);
+                }
+            }
+        }
+
+        function roomSummary(range, searchTerm) {
+            const rooms = RANGE_ROOM_CACHE.get(range.id) || [];
+            const filteredRooms = rooms.filter(room => {
+                if (!searchTerm) return true;
+                const occupied = bookingsByRoom.get(room) || [];
+                return occupied.some(booking => bookingMatchesSearch(booking, searchTerm)) || room.toLowerCase().includes(searchTerm);
+            });
+            return filteredRooms;
+        }
+
+        function updateStats() {
+            const totalRooms = ROOM_RANGES.reduce((count, range) => count + (RANGE_ROOM_CACHE.get(range.id) || []).length, 0);
+            const occupiedBeds = allBookings.length;
+            const totalBeds = totalRooms * BEDS_PER_ROOM;
+            const availableBeds = Math.max(totalBeds - occupiedBeds, 0);
+
+            document.getElementById('statAssigned').textContent = String(occupiedBeds);
+            document.getElementById('statOccupied').textContent = String(occupiedBeds);
+            document.getElementById('statAvailable').textContent = String(availableBeds);
+            document.getElementById('statRooms').textContent = String(totalRooms);
+
+            document.getElementById('miniBooked').textContent = String(occupiedBeds);
+            document.getElementById('miniVacant').textContent = String(availableBeds);
+            document.getElementById('miniRooms').textContent = String(totalRooms);
+            document.getElementById('miniRanges').textContent = String(ROOM_RANGES.length);
+        }
+
+        function showDashboardSkeleton() {
+            dataStatus.innerHTML = '<i class="fa-solid fa-circle-notch"></i> Loading';
+            roomBoard.innerHTML = `
+                <div class="loading-card" aria-hidden="true" style="margin-top: 6px;">
+                    <div class="spinner" style="width:34px;height:34px;border-width:4px;margin:0 0 14px;"></div>
+                    <div class="loading-line md loading-shimmer" style="width: 180px; max-width: 100%;"></div>
+                    <div class="loading-line sm loading-shimmer" style="width: 260px; max-width: 100%; margin-top: 10px;"></div>
+                </div>
+            `;
+        }
+
+        function updateRoomSelect(booking) {
+            const rangeId = targetRange.value || booking?.roomRange || findRangeForRoom(booking?.room)?.id || ROOM_RANGES[0].id;
+            const range = ROOM_RANGES.find(item => item.id === rangeId) || ROOM_RANGES[0];
+            const rooms = (RANGE_ROOM_CACHE.get(range.id) || []).filter(room => {
+                const freeBeds = freeBedsForRoom(room, booking?.id || '');
+                return room === booking?.room || freeBeds.length > 0;
+            });
+
+            targetRange.value = range.id;
+            targetRoom.innerHTML = rooms.map(room => {
+                const label = `${room} (${roomAvailableBeds(room, booking?.id || '')} free)`;
+                return `<option value="${room}">${escapeHtml(label)}</option>`;
+            }).join('');
+
+            if (!rooms.length) {
+                targetRoom.innerHTML = '<option value="">No rooms available</option>';
+            }
+
+            const currentRoom = booking?.room || rooms[0] || '';
+            targetRoom.value = rooms.includes(currentRoom) ? currentRoom : (rooms[0] || '');
+            updateBedSelect(booking);
+        }
+
+        function updateBedSelect(booking) {
+            const room = targetRoom.value || booking?.room || '';
+            const freeBeds = freeBedsForRoom(room, booking?.id || '');
+            const currentBed = normalizeBed(booking?.bedNumber);
+            const bedsToShow = freeBeds.includes(currentBed) ? [currentBed, ...freeBeds.filter(bed => bed !== currentBed)] : freeBeds;
+
+            targetBed.innerHTML = bedsToShow.length
+                ? bedsToShow.map(bed => `<option value="${bed}">Bed ${bed}</option>`).join('')
+                : '<option value="">No beds available</option>';
+
+            if (!bedsToShow.length) {
+                targetBed.value = '';
+            } else {
+                const defaultBed = bedsToShow[0];
+                targetBed.value = freeBeds.includes(currentBed) ? (freeBeds.find(bed => bed !== currentBed) || currentBed) : defaultBed;
+            }
+        }
+
+        function renderSelectedBooking() {
+            const booking = selectedBooking();
+            if (!booking) {
+                selectedTitle.textContent = 'No student selected';
+                selectedBadge.className = 'pill warn';
+                selectedBadge.innerHTML = '<i class="fa-solid fa-circle-info"></i> Idle';
+                selectedEmpty.hidden = false;
+                selectedDetails.hidden = true;
+                moveBtn.disabled = true;
+                removeBtn.disabled = true;
+                deleteAccountBtn.disabled = true;
+                return;
+            }
+
+            const roomLabel = booking.room ? `Room ${booking.room}` : '-';
+            const bedLabel = booking.bedNumber ? `Bed ${normalizeBed(booking.bedNumber)}` : '-';
+            const rangeLabel = booking.roomRange || findRangeForRoom(booking.room)?.id || '-';
+
+            selectedTitle.textContent = booking.studentName || 'Student';
+            selectedBadge.className = 'pill info';
+            selectedBadge.innerHTML = '<i class="fa-solid fa-user-gear"></i> Selected';
+            selectedEmpty.hidden = true;
+            selectedDetails.hidden = false;
+
+            document.getElementById('detailName').textContent = booking.studentName || '-';
+            document.getElementById('detailId').textContent = booking.studentId || booking.matrixNumber || '-';
+            document.getElementById('detailRoom').textContent = roomLabel;
+            document.getElementById('detailBed').textContent = bedLabel;
+            document.getElementById('detailRange').textContent = rangeLabel;
+            document.getElementById('detailStatus').textContent = booking.residentStatus || booking.status || 'Active';
+
+            moveBtn.disabled = false;
+            removeBtn.disabled = false;
+            deleteAccountBtn.disabled = false;
+            updateRoomSelect(booking);
+        }
+
+        function renderRoomBoard() {
+            if (!hasLoadedBookings) {
+                showDashboardSkeleton();
+                return;
+            }
+
+            const searchTerm = String(searchInput.value || '').trim().toLowerCase();
+            const visibleRanges = ROOM_RANGES.filter(range => activeRangeFilter === 'all' || range.id === activeRangeFilter);
+
+            roomBoard.innerHTML = visibleRanges.map(range => {
+                const rooms = roomSummary(range, searchTerm);
+                const rangeRoomList = RANGE_ROOM_CACHE.get(range.id) || [];
+                const rangeRoomsCount = rangeRoomList.length;
+                const rangeOccupied = rangeCounts.get(range.id) || 0;
+                const rangeAvailable = Math.max((rangeRoomsCount * BEDS_PER_ROOM) - rangeOccupied, 0);
+
+                return `
+                    <section class="range-card">
+                        <div class="range-head">
+                            <div>
+                                <div class="eyebrow">${escapeHtml(range.title)}</div>
+                                <h3>${escapeHtml(range.note)}</h3>
+                            </div>
+                            <span class="pill ${rangeAvailable > 0 ? 'good' : 'bad'}">
+                                <i class="fa-solid fa-bed"></i>
+                                ${rangeAvailable} free
+                            </span>
+                        </div>
+                        <p class="muted" style="margin:12px 0 0;">
+                            ${rangeOccupied} occupied beds across ${rangeRoomsCount} rooms.
+                        </p>
+                        <div class="rooms-grid">
+                            ${rooms.map(room => {
+                                const bookings = bookingsByRoom.get(room) || [];
+                                const bookingsByBed = bookingsByRoomAndBed.get(room) || new Map();
+                                const available = roomAvailableBeds(room);
+                                const isFocused = bookings.some(booking => booking.id === selectedBookingId);
+                                return `
+                                    <article class="room-card ${isFocused ? 'focus' : ''}">
+                                        <div class="room-head">
+                                            <div>
+                                                <h4>${escapeHtml(room)}</h4>
+                                                <p class="muted" style="margin:6px 0 0;">${bookings.length} / ${BEDS_PER_ROOM} occupied</p>
+                                            </div>
+                                            <span class="pill ${available > 0 ? 'good' : 'bad'}">${available} free</span>
+                                        </div>
+                                        <div class="bed-grid">
+                                            ${beds.map(bed => {
+                                                const booking = bookingsByBed.get(bed);
+                                                const active = booking?.id === selectedBookingId;
+                                                return `
+                                                    <button
+                                                        type="button"
+                                                        class="bed-slot ${booking ? 'occupied' : 'empty'} ${active ? 'active' : ''}"
+                                                        data-booking-id="${booking ? booking.id : ''}"
+                                                        ${booking ? '' : 'disabled'}
+                                                    >
+                                                        <span class="pill ${booking ? 'info' : 'warn'}" style="width:max-content;">
+                                                            Bed ${bed}
+                                                        </span>
+                                                        <strong>${booking ? escapeHtml(booking.studentName || 'Student') : 'Vacant'}</strong>
+                                                        <small>${booking ? escapeHtml(booking.studentId || booking.matrixNumber || '-') : 'Available'}</small>
+                                                    </button>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </article>
+                                `;
+                            }).join('')}
+                        </div>
+                    </section>
+                `;
+            }).join('');
+
+            if (!roomBoard.innerHTML) {
+                roomBoard.innerHTML = '<p class="muted" style="margin:0;">No rooms match the current filter.</p>';
+            }
+        }
+
+        function scheduleRender() {
+            if (renderQueued) return;
+            renderQueued = true;
+            window.requestAnimationFrame(() => {
+                renderQueued = false;
+                renderAll();
+            });
+        }
+
+        function scheduleAvailabilitySync() {
+            window.clearTimeout(availabilitySyncTimer);
+            availabilitySyncTimer = window.setTimeout(() => {
+                void syncPublicAvailability();
+            }, 250);
+        }
+
+        async function syncPublicAvailability() {
+            for (const range of ROOM_RANGES) {
+                const occupiedBeds = rangeCounts.get(range.id) || 0;
+                const rooms = RANGE_ROOM_CACHE.get(range.id) || [];
+
+                try {
+                    await setDoc(doc(db, 'publicAvailability', range.id), {
+                        occupiedBeds,
+                        totalBeds: rooms.length * BEDS_PER_ROOM,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                } catch (error) {
+                    console.warn('Unable to update public availability:', error);
+                }
+            }
+        }
+
+        function renderAll() {
+            if (!hasLoadedBookings) {
+                showDashboardSkeleton();
+                return;
+            }
+
+            updateStats();
+            renderRoomBoard();
+            renderSelectedBooking();
+        }
+
+        function selectBookingById(bookingId) {
+            selectedBookingId = bookingId;
+            scheduleRender();
+        }
+
+        async function refreshSelectedBooking() {
+            const booking = selectedBooking();
+            if (!booking) {
+                toast('Select a student first.', 'error');
+                return;
+            }
+
+            const room = targetRoom.value.trim();
+            const bed = normalizeBed(targetBed.value);
+            const rangeId = targetRange.value;
+
+            if (!room || !bed || !rangeId) {
+                toast('Please choose a target room and bed.', 'error');
+                return;
+            }
+
+            const newDocId = bookingDocId(room, bed);
+            const oldRef = doc(db, 'bookings', booking.id);
+            const newRef = doc(db, 'bookings', newDocId);
+            const studentRef = doc(db, 'students', booking.createdByUid || booking.uid || '');
+            const userRef = doc(db, 'users', booking.createdByUid || booking.uid || '');
+
+            if (!booking.createdByUid && !booking.uid) {
+                toast('This booking does not have a student UID, so it cannot be moved safely.', 'error');
+                return;
+            }
+
+            try {
+                moveBtn.disabled = true;
+                removeBtn.disabled = true;
+
+                await runTransaction(db, async transaction => {
+                    const currentSnap = await transaction.get(oldRef);
+                    if (!currentSnap.exists()) {
+                        throw new Error('The booking was already removed.');
+                    }
+
+                    if (newDocId !== booking.id) {
+                        const targetSnap = await transaction.get(newRef);
+                        if (targetSnap.exists()) {
+                            throw new Error('The target bed is already occupied.');
+                        }
+                    }
+
+                    const currentData = currentSnap.data();
+                    const updatedData = {
+                        ...currentData,
+                        room,
+                        roomRange: rangeId,
+                        bedNumber: bed,
+                        residentStatus: currentData.residentStatus || 'Active',
+                        updatedAt: serverTimestamp(),
+                        movedAt: serverTimestamp()
+                    };
+
+                    if (newDocId !== booking.id) {
+                        transaction.set(newRef, updatedData);
+                        transaction.delete(oldRef);
+                    } else {
+                        transaction.set(oldRef, updatedData, { merge: true });
+                    }
+
+                    const profileUpdate = {
+                        roomRange: rangeId,
+                        roomNumber: room,
+                        bedNumber: bed,
+                        residentStatus: 'Active',
+                        updatedAt: serverTimestamp()
+                    };
+
+                    transaction.set(studentRef, profileUpdate, { merge: true });
+                    transaction.set(userRef, profileUpdate, { merge: true });
+                });
+
+                const optimisticBooking = {
+                    ...booking,
+                    id: newDocId,
+                    room,
+                    roomRange: rangeId,
+                    bedNumber: bed,
+                    residentStatus: 'Active'
+                };
+
+                allBookings = newDocId === booking.id
+                    ? allBookings.map(item => item.id === booking.id ? optimisticBooking : item)
+                    : allBookings.filter(item => item.id !== booking.id).concat(optimisticBooking);
+
+                toast(`Moved ${booking.studentName || 'student'} to ${room} Bed ${bed}.`);
+                selectedBookingId = newDocId;
+                rebuildBookingIndexes(allBookings);
+                scheduleRender();
+                scheduleAvailabilitySync();
+            } catch (error) {
+                toast(error.message || 'Unable to move student.', 'error');
+            } finally {
+                moveBtn.disabled = false;
+                removeBtn.disabled = false;
+            }
+        }
+
+        async function removeSelectedBooking() {
+            const booking = selectedBooking();
+            if (!booking) {
+                toast('Select a student first.', 'error');
+                return;
+            }
+
+            if (!confirm(`Remove ${booking.studentName || 'this student'} from Room ${booking.room} Bed ${normalizeBed(booking.bedNumber)}?`)) {
+                return;
+            }
+
+            const bookingRef = doc(db, 'bookings', booking.id);
+            const studentKey = booking.createdByUid || booking.uid || '';
+            const studentRef = studentKey ? doc(db, 'students', studentKey) : null;
+            const userRef = studentKey ? doc(db, 'users', studentKey) : null;
+
+            try {
+                moveBtn.disabled = true;
+                removeBtn.disabled = true;
+
+                await runTransaction(db, async transaction => {
+                    const currentSnap = await transaction.get(bookingRef);
+                    if (!currentSnap.exists()) {
+                        throw new Error('The booking was already removed.');
+                    }
+
+                    transaction.delete(bookingRef);
+
+                    const profileUpdate = {
+                        roomRange: '',
+                        roomNumber: '',
+                        bedNumber: '',
+                        residentStatus: 'Unassigned',
+                        updatedAt: serverTimestamp()
+                    };
+
+                    if (studentRef) transaction.set(studentRef, profileUpdate, { merge: true });
+                    if (userRef) transaction.set(userRef, profileUpdate, { merge: true });
+                });
+
+                allBookings = allBookings.filter(item => item.id !== booking.id);
+
+                toast(`Removed ${booking.studentName || 'student'} from the room.`);
+                selectedBookingId = '';
+                rebuildBookingIndexes(allBookings);
+                scheduleRender();
+                scheduleAvailabilitySync();
+            } catch (error) {
+                toast(error.message || 'Unable to remove student.', 'error');
+            } finally {
+                moveBtn.disabled = false;
+                removeBtn.disabled = false;
+            }
+        }
+
+        async function deleteSelectedAccount() {
+            const booking = selectedBooking();
+            if (!booking) {
+                toast('Select a student first.', 'error');
+                return;
+            }
+
+            const studentKey = booking.createdByUid || booking.uid || '';
+            const studentLabel = booking.studentName || 'this student';
+            const confirmMessage = studentKey
+                ? `Delete ${studentLabel} and remove their Firestore records? This will delete the booking, user, and student documents.`
+                : `Delete ${studentLabel} booking record? The Auth account was already removed, so only Firestore records will be deleted.`;
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            const bookingRef = doc(db, 'bookings', booking.id);
+            const studentRef = studentKey ? doc(db, 'students', studentKey) : null;
+            const userRef = studentKey ? doc(db, 'users', studentKey) : null;
+
+            try {
+                moveBtn.disabled = true;
+                removeBtn.disabled = true;
+                deleteAccountBtn.disabled = true;
+
+                await runTransaction(db, async transaction => {
+                    const currentSnap = await transaction.get(bookingRef);
+                    if (!currentSnap.exists()) {
+                        throw new Error('The booking was already removed.');
+                    }
+
+                    transaction.delete(bookingRef);
+                    if (studentRef) transaction.delete(studentRef);
+                    if (userRef) transaction.delete(userRef);
+                });
+
+                allBookings = allBookings.filter(item => item.id !== booking.id);
+                selectedBookingId = '';
+                rebuildBookingIndexes(allBookings);
+                scheduleRender();
+                scheduleAvailabilitySync();
+                toast(`Deleted ${studentLabel} record.`);
+            } catch (error) {
+                toast(error.message || 'Unable to delete student account.', 'error');
+            } finally {
+                moveBtn.disabled = false;
+                removeBtn.disabled = false;
+                deleteAccountBtn.disabled = false;
+            }
+        }
+
+        async function saveAccessPermission() {
+            const matrixNo = normalizeAccessMatrix();
+            const email = String(accessEmail.value || '').trim();
+
+            if (!matrixNo) {
+                toast('Enter a matrix number or access code.', 'error');
+                return;
+            }
+
+            if (!email) {
+                toast('Enter an email for password resets and traceability.', 'error');
+                return;
+            }
+
+            const collectionName = getAccessCollection();
+
+            try {
+                saveAccessBtn.disabled = true;
+                revokeAccessBtn.disabled = true;
+                resetPasswordBtn.disabled = true;
+
+                await setDoc(doc(db, collectionName, matrixNo), {
+                    matrixNo,
+                    email,
+                    active: accessActive.checked === true,
+                    role: accessRole.value,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+
+                toast(`${accessRole.value === 'admin' ? 'Admin' : 'Staff'} access saved for ${matrixNo}.`);
+            } catch (error) {
+                toast(error.message || 'Unable to save access permission.', 'error');
+            } finally {
+                saveAccessBtn.disabled = false;
+                revokeAccessBtn.disabled = false;
+                resetPasswordBtn.disabled = false;
+            }
+        }
+
+        async function revokeAccessPermission() {
+            const matrixNo = normalizeAccessMatrix();
+            if (!matrixNo) {
+                toast('Enter a matrix number or access code.', 'error');
+                return;
+            }
+
+            const collectionName = getAccessCollection();
+
+            try {
+                saveAccessBtn.disabled = true;
+                revokeAccessBtn.disabled = true;
+                resetPasswordBtn.disabled = true;
+
+                await deleteDoc(doc(db, collectionName, matrixNo));
+                toast(`${accessRole.value === 'admin' ? 'Admin' : 'Staff'} access revoked for ${matrixNo}.`);
+            } catch (error) {
+                toast(error.message || 'Unable to revoke access.', 'error');
+            } finally {
+                saveAccessBtn.disabled = false;
+                revokeAccessBtn.disabled = false;
+                resetPasswordBtn.disabled = false;
+            }
+        }
+
+        async function sendResetEmailForSelected() {
+            const booking = selectedBooking();
+            const email = String(accessEmail.value || booking?.email || booking?.createdBy || '').trim();
+
+            if (!email) {
+                toast('Enter or select an email address first.', 'error');
+                return;
+            }
+
+            try {
+                saveAccessBtn.disabled = true;
+                revokeAccessBtn.disabled = true;
+                resetPasswordBtn.disabled = true;
+
+                await sendPasswordResetEmail(auth, email);
+                toast(`Password reset email sent to ${email}.`);
+            } catch (error) {
+                toast(error.message || 'Unable to send reset email.', 'error');
+            } finally {
+                saveAccessBtn.disabled = false;
+                revokeAccessBtn.disabled = false;
+                resetPasswordBtn.disabled = false;
+            }
+        }
+
+        function seedTargetSelectors() {
+            const rangeOptions = ROOM_RANGES.map(range => `<option value="${range.id}">${escapeHtml(range.title)} - ${escapeHtml(range.note)}</option>`).join('');
+            targetRange.innerHTML = rangeOptions;
+        }
+
+        async function loadAdminProfile(user) {
+            const userSnap = await getDoc(doc(db, 'users', user.uid));
+            if (!userSnap.exists()) {
+                throw new Error('Admin profile not found.');
+            }
+
+            const profile = userSnap.data();
+            if (profile.role !== 'admin') {
+                throw new Error('You do not have admin access.');
+            }
+
+            staffProfile = profile;
+            staffLabel.textContent = profile.fullName ? `Signed in as ${profile.fullName}` : 'Managing student beds and room transfers.';
+        }
+
+        rangeToolbar.addEventListener('click', event => {
+            const button = event.target.closest('button[data-range]');
+            if (!button) return;
+            activeRangeFilter = button.dataset.range;
+            rangeToolbar.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn === button));
+            scheduleRender();
+        });
+
+        searchInput.addEventListener('input', () => scheduleRender());
+
+        targetRange.addEventListener('change', () => {
+            const booking = selectedBooking();
+            if (booking) updateRoomSelect(booking);
+        });
+
+        targetRoom.addEventListener('change', () => {
+            const booking = selectedBooking();
+            if (booking) updateBedSelect(booking);
+        });
+
+        document.addEventListener('click', event => {
+            const bedButton = event.target.closest('[data-booking-id]');
+            if (bedButton && bedButton.dataset.bookingId) {
+                selectBookingById(bedButton.dataset.bookingId);
+                return;
+            }
+        });
+
+        moveBtn.addEventListener('click', refreshSelectedBooking);
+        removeBtn.addEventListener('click', removeSelectedBooking);
+        deleteAccountBtn.addEventListener('click', deleteSelectedAccount);
+        saveAccessBtn.addEventListener('click', saveAccessPermission);
+        revokeAccessBtn.addEventListener('click', revokeAccessPermission);
+        resetPasswordBtn.addEventListener('click', sendResetEmailForSelected);
+
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            scheduleRender();
+            toast('Dashboard refreshed.');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            sessionStorage.removeItem('isAdminAuthenticated');
+            sessionStorage.removeItem('userRole');
+            sessionStorage.removeItem('userEmail');
+            sessionStorage.removeItem('fullName');
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.warn('Logout warning:', error);
+            }
+            window.location.href = 'index.html';
+        });
+
+        onAuthStateChanged(auth, async user => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                await loadAdminProfile(user);
+                sessionStorage.setItem('isAdminAuthenticated', 'true');
+                sessionStorage.setItem('userRole', 'admin');
+                currentUser = user;
+                seedTargetSelectors();
+                renderAll();
+                loadingScreen.hidden = true;
+                appShell.hidden = false;
+            } catch (error) {
+                alert(error.message || 'Access denied.');
+                window.location.href = 'index.html';
+            }
+        });
+
+        const bookingQuery = query(collection(db, 'bookings'), orderBy('bookedAt', 'desc'));
+        onSnapshot(bookingQuery, snapshot => {
+            allBookings = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+            rebuildBookingIndexes(allBookings);
+            hasLoadedBookings = true;
+            scheduleRender();
+            scheduleAvailabilitySync();
+            dataStatus.innerHTML = '<i class="fa-solid fa-circle"></i> Live';
+        }, error => {
+            console.error(error);
+            hasLoadedBookings = true;
+            scheduleRender();
+            dataStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Sync issue';
+            toast('Failed to load bookings from Firestore.', 'error');
+        });
+
+        seedTargetSelectors();
+        renderAll();
+    </script>
+</body>
+</html>
